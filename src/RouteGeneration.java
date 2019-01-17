@@ -24,12 +24,14 @@
         - Writing result to file
  */
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 
 public class RouteGeneration {
 
-    public static void main(String[] args){
+    private static BufferedReader reader;
+    private BufferedWriter writer;
+
+    public static void main(String[] args) throws IOException {
         String addressSource = "Address.dat";
         String layoutSource = "Layout.dat";
 
@@ -42,8 +44,17 @@ public class RouteGeneration {
     }
 
     //TODO: addresses can be parsed in a straightforward way
-    private String[] parseAddress(String source){
-        String[] result;
+    private static String[] parseAddress(String source) throws IOException {
+        String[] result = new String[];
+        FileReader file = new FileReader(source);
+        reader = new BufferedReader(file);
+        int i = 0;
+        String line = reader.readLine();
+        while (line != null){
+            result[i++] = line;
+            line = reader.readLine();
+        }
+        reader.close();
         return result;
     }
 
