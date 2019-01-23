@@ -25,6 +25,8 @@
  */
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RouteGeneration {
 
@@ -45,17 +47,16 @@ public class RouteGeneration {
 
     //TODO: addresses can be parsed in a straightforward way
     private static String[] parseAddress(String source) throws IOException {
-        String[] result = new String[];
         FileReader file = new FileReader(source);
         reader = new BufferedReader(file);
-        int i = 0;
-        String line = reader.readLine();
-        while (line != null){
-            result[i++] = line;
-            line = reader.readLine();
+
+        List<String> lines = new ArrayList<>();
+        String line;
+        while((line = reader.readLine()) != null){
+            lines.add(line);
         }
         reader.close();
-        return result;
+        return lines.toArray(new String[0]);
     }
 
     //TODO: layout is trickier - consider difference of cities, zips, vertical/horizontal
