@@ -79,16 +79,32 @@ public class RouteGeneration {
             List<String> verticalStreets = new ArrayList<>();
             List<String> horizontalStreets = new ArrayList<>();
 
-            String city = line.substring(line.indexOf(":") + 1, line.indexOf(","));
-            String zip = line.substring(line.indexOf(",") + 1);
+            String city = line.substring(line.indexOf(":") + 2, line.indexOf(","));
+            String zip = line.substring(line.indexOf(",") + 2);
+
+            System.out.println(city);
+            System.out.println(zip);
 
             reader.readLine();
 
+            System.out.println("vertical streets");
             while((line = reader.readLine()) != null){
-
+                if(line.equals(""))
+                    break;
+                verticalStreets.add(line);
+                System.out.println(line);
             }
-            System.out.println(city);
-            System.out.println(zip);
+
+            reader.readLine();
+            reader.readLine();
+
+            System.out.println("horizontal streets");
+            while((line = reader.readLine()) != null){
+                if(line.equals(""))
+                    break;
+                horizontalStreets.add(line);
+                System.out.println(line);
+            }
 
             layouts.add(new Layout(city, zip, verticalStreets, horizontalStreets));
         }
