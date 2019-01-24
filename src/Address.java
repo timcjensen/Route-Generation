@@ -1,27 +1,33 @@
 public class Address {
-    String city;
-    String zip;
-    String address;
+    private String city;
+    private String zip;
+    private String number;
+    private String street;
 
-    public Address(String city, String zip, String address) {
+    Address(String city, String zip, String number, String street) {
         this.city = city;
         this.zip = zip;
-        this.address = address;
+        this.number = number;
+        this.street = street;
     }
 
-    public String getCity() {
+    String getCity() {
         return city;
     }
 
-    public String getZip() {
+    String getZip() {
         return zip;
     }
 
-    public String getAddress() {
-        return address;
+    public String getNumber() {
+        return number;
+    }
+
+    public String getStreet() {
+        return street;
     }
 
     public String toString(){
-        return address + ", " + city + ", " + zip;
+        return number + " " + street + ", " + city + ", " + zip;
     }
 }

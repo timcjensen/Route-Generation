@@ -28,23 +28,22 @@
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RouteGeneration {
 
     private static BufferedReader reader;
-    private BufferedWriter writer;
 
     public static void main(String[] args) throws IOException {
         String addressSource = "Address.dat";
         String layoutSource = "Layout.dat";
+        String outputFile = "Route.dat";
 
         List<Address> addressList = parseAddress(addressSource);
         List<Layout> layoutList = parseLayout(layoutSource);
-
-        String output = determineRoute(addressList, layoutList);
-
-        writeResult(output);
+        List<String> routeList = determineRoute(addressList, layoutList);
+        writeResult(routeList, outputFile);
     }
 
     //addresses can be parsed in a straightforward way
@@ -55,18 +54,23 @@ public class RouteGeneration {
         String line;
 
         while((line = reader.readLine()) != null){
-            String address = line.substring(0, line.indexOf(","));
-            String city = line.substring(address.length() + 2, line.indexOf(",", address.length() + 1));
-            String zip = line.substring(address.length() + city.length() + 4);
+            int length = 0;
+            String number = line.substring(0, line.indexOf(" "));
+            length += number.length() + 1;
+            String street = line.substring(length, line.indexOf(","));
+            length += street.length() + 2;
+            String city = line.substring(length, line.indexOf(",", length));
+            length += city.length() + 2;
+            String zip = line.substring(length);
 
-            addresses.add(new Address(city, zip, address));
+            addresses.add(new Address(city, zip, number, street));
         }
 
         reader.close();
         return addresses;
     }
 
-    //TODO: layout is trickier - consider difference of cities, zips, vertical/horizontal
+    //layout is trickier - consider difference of cities, zips, vertical/horizontal
     private static List<Layout> parseLayout(String source) throws IOException{
         FileReader file = new FileReader(source);
         reader = new BufferedReader(file);
@@ -113,12 +117,35 @@ public class RouteGeneration {
     }
 
     //TODO
-    private static String determineRoute(List<Address> addresses, List<Layout> layouts){
-        return "";
+    private static List<String> determineRoute(List<Address> addresses, List<Layout> layouts){
+        List<String> output = new ArrayList<>();
+        for(Layout layout : layouts){
+            for(Address address : addresses){
+                if(layout.getCity().equals(address.getCity())){
+                    if(layout.getZip().equals(address.getZip())){
+
+                        List<String> area = new ArrayList<>();
+                        for(String street : layout.getVerticalStreets()){
+                            if(street.equals(address.getStreet())){
+                                area.add(address.toString());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        System.out.println("Route successfully generated.");
+        return output;
     }
 
-    //TODO
-    private static void writeResult(String output){
+    private static void writeResult(List<String> routeList, String outputFile) throws IOException{
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        for (String s : routeList) {
+            writer.write(s + "\n");
+        }
 
+        writer.close();
+        System.out.println("Output successfully wrote to file.");
     }
 }
