@@ -1,10 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Layout {
     String city;
     String zip;
-    String[] verticalStreets;
-    String[] horizontalStreets;
+    List<String> verticalStreets;
+    List<String> horizontalStreets;
 
-    public Layout(String city, String zip, String[] verticalStreets, String[] horizontalStreets) {
+    public Layout(String city, String zip, List<String> verticalStreets, List<String> horizontalStreets) {
         this.city = city;
         this.zip = zip;
         this.verticalStreets = verticalStreets;
@@ -19,11 +22,11 @@ public class Layout {
         return zip;
     }
 
-    public String[] getVerticalStreets() {
+    public List<String> getVerticalStreets() {
         return verticalStreets;
     }
 
-    public String[] getHorizontalStreets() {
+    public List<String> getHorizontalStreets() {
         return horizontalStreets;
     }
 }

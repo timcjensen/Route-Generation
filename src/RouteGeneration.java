@@ -28,25 +28,23 @@
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class RouteGeneration {
 
     private static BufferedReader reader;
     private BufferedWriter writer;
-    private List<Layout> layouts = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         String addressSource = "Address.dat";
         String layoutSource = "Layout.dat";
 
         List<Address> addressList = parseAddress(addressSource);
-//        String[] layoutA = parseLayout(layoutSource);
-//
-//        String output = determineRoute(addressA, layoutA);
-//
-//        writeResult(output);
+        List<Layout> layoutList = parseLayout(layoutSource);
+
+        String output = determineRoute(addressList, layoutList);
+
+        writeResult(output);
     }
 
     //addresses can be parsed in a straightforward way
@@ -68,17 +66,43 @@ public class RouteGeneration {
         return addresses;
     }
 
-//    //TODO: layout is trickier - consider difference of cities, zips, vertical/horizontal
-//    private String[] parseLayout(String source) throws IOException{
-//    }
-//
-//    //TODO
-//    private static String determineRoute(String[] addresses, String[] layout){
-//        return "";
-//    }
-//
-//    //TODO
-//    private static void writeResult(String output){
-//
-//    }
+    //TODO: layout is trickier - consider difference of cities, zips, vertical/horizontal
+    private static List<Layout> parseLayout(String source) throws IOException{
+        FileReader file = new FileReader(source);
+        reader = new BufferedReader(file);
+        List<Layout> layouts = new ArrayList<>();
+
+        String line;
+
+        while((line = reader.readLine()) != null){
+            // first line - city + zip
+            List<String> verticalStreets = new ArrayList<>();
+            List<String> horizontalStreets = new ArrayList<>();
+
+            String city = line.substring(line.indexOf(":") + 1, line.indexOf(","));
+            String zip = line.substring(line.indexOf(",") + 1);
+
+            reader.readLine();
+
+            while((line = reader.readLine()) != null){
+
+            }
+            System.out.println(city);
+            System.out.println(zip);
+
+            layouts.add(new Layout(city, zip, verticalStreets, horizontalStreets));
+        }
+
+        return layouts;
+    }
+
+    //TODO
+    private static String determineRoute(List<Address> addresses, List<Layout> layouts){
+        return "";
+    }
+
+    //TODO
+    private static void writeResult(String output){
+
+    }
 }
