@@ -30,6 +30,10 @@ public class Layout {
         return horizontalStreets;
     }
 
+    public String getTitle(){
+        return city + ", " + zip;
+    }
+
     public String toString() {
         return  city +
                 "\n" +

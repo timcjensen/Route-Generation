@@ -17,22 +17,19 @@
 
 /*
     TODO:
-        - Fill in test data (Address, Layout)
-            - Possibly create random data
-        - Parsing in data
-            - Address, Layout
-        - Sorting addresses based on adjacency
-            - Grouped by city and zip code
-        - Writing result to file
+        - UI?
+        - Export/create presentation
  */
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class RouteGeneration {
 
     private static BufferedReader reader;
+    private static int routeCount = 0;
 
     public static void main(String[] args) throws IOException {
         String addressSource = "Address.dat";
@@ -124,11 +121,45 @@ public class RouteGeneration {
         }
     }
 
-    //TODO
+    // returns a string list of the generated meaningful route
     private static List<String> determineRoute(List<Address> addresses, List<Layout> layouts){
         List<String> output = new ArrayList<>();
 
-        System.out.println("Route successfully generated.");
+        for(Layout l : layouts){
+            List<String> horizOutput = new ArrayList<>();
+            List<String> vertOutput = new ArrayList<>();
+
+            for(String vert : l.getVerticalStreets()){
+                vertOutput.addAll(matchStreet(addresses, l, vert));
+            }
+
+            for(String horiz : l.getHorizontalStreets()){
+                horizOutput.addAll(matchStreet(addresses, l, horiz));
+            }
+
+            output.add(l.getTitle());
+            output.add("");
+            output.addAll(vertOutput);
+            output.addAll(horizOutput);
+            output.add("");
+        }
+
+        System.out.println("Route successfully generated. Street count: " + routeCount);
+        return output;
+    }
+
+    private static List<String>  matchStreet(List<Address> addresses, Layout layout, String street) {
+        List<String> output = new ArrayList<>();
+
+        for(Address a : addresses){
+            if(a.getStreet().equals(street) && layout.getCity().equals(a.getCity())
+                    && layout.getZip().equals(a.getZip())){
+                output.add(a.toString());
+                routeCount++;
+            }
+            Collections.sort(output);
+        }
+
         return output;
     }
 
