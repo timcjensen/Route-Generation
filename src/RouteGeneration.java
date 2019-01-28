@@ -28,7 +28,6 @@
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class RouteGeneration {
@@ -41,8 +40,25 @@ public class RouteGeneration {
         String outputFile = "Route.dat";
 
         List<Address> addressList = parseAddress(addressSource);
+
+        System.out.println("Addresses:\n");
+        for(Address a : addressList){
+            System.out.println(a.toString());
+        }
         List<Layout> layoutList = parseLayout(layoutSource);
+
+        System.out.println("\nLayouts:\n");
+        for(Layout l : layoutList){
+            System.out.println(l.toString());
+        }
+
         List<String> routeList = determineRoute(addressList, layoutList);
+
+        System.out.println("\nRoute:\n");
+        for(String s: routeList){
+            System.out.println(s);
+        }
+
         writeResult(routeList, outputFile);
     }
 
@@ -86,29 +102,10 @@ public class RouteGeneration {
             String city = line.substring(line.indexOf(":") + 2, line.indexOf(","));
             String zip = line.substring(line.indexOf(",") + 2);
 
-            System.out.println(city);
-            System.out.println(zip);
+            getStreets(verticalStreets);
 
             reader.readLine();
-
-            System.out.println("vertical streets");
-            while((line = reader.readLine()) != null){
-                if(line.equals(""))
-                    break;
-                verticalStreets.add(line);
-                System.out.println(line);
-            }
-
-            reader.readLine();
-            reader.readLine();
-
-            System.out.println("horizontal streets");
-            while((line = reader.readLine()) != null){
-                if(line.equals(""))
-                    break;
-                horizontalStreets.add(line);
-                System.out.println(line);
-            }
+            getStreets(horizontalStreets);
 
             layouts.add(new Layout(city, zip, verticalStreets, horizontalStreets));
         }
@@ -116,24 +113,20 @@ public class RouteGeneration {
         return layouts;
     }
 
+    private static void getStreets(List<String> streets) throws IOException {
+        String line;
+        reader.readLine();
+
+        while((line = reader.readLine()) != null){
+            if(line.equals(""))
+                break;
+            streets.add(line);
+        }
+    }
+
     //TODO
     private static List<String> determineRoute(List<Address> addresses, List<Layout> layouts){
         List<String> output = new ArrayList<>();
-        for(Layout layout : layouts){
-            for(Address address : addresses){
-                if(layout.getCity().equals(address.getCity())){
-                    if(layout.getZip().equals(address.getZip())){
-
-                        List<String> area = new ArrayList<>();
-                        for(String street : layout.getVerticalStreets()){
-                            if(street.equals(address.getStreet())){
-                                area.add(address.toString());
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         System.out.println("Route successfully generated.");
         return output;

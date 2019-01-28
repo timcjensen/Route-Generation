@@ -31,8 +31,7 @@ public class Layout {
     }
 
     public String toString() {
-        return "\n" +
-                city +
+        return  city +
                 "\n" +
                 zip +
                 "\n" +
@@ -40,6 +39,7 @@ public class Layout {
                 Arrays.toString(verticalStreets.toArray()) +
                 "\n" +
                 "Horizontal streets: " +
-                Arrays.toString(horizontalStreets.toArray());
+                Arrays.toString(horizontalStreets.toArray()) +
+                "\n";
     }
 }
