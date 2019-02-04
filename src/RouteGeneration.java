@@ -15,154 +15,136 @@
                         that is a suggested route
  */
 
-/*
-    TODO:
-        - UI?
-        - Export/create presentation
- */
-
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 
 public class RouteGeneration {
 
     private static BufferedReader reader;
     private static int routeCount = 0;
 
-    public static void main(String[] args) throws IOException {
-        String addressSource = "Address.dat";
-        String layoutSource = "Layout.dat";
-        String outputFile = "Route.dat";
+    private static List<Address> addressList = new ArrayList<>();
+    private static List<Layout> layoutList = new ArrayList<>();
+    private static List<String> routeList = new ArrayList<>();
 
-        List<Address> addressList = parseAddress(addressSource);
+    private static String addressSource;
+    private static String layoutSource;
+    private static String outputFile = "Route.dat";
 
-        System.out.println("Addresses:\n");
-        for(Address a : addressList){
-            System.out.println(a.toString());
-        }
-        List<Layout> layoutList = parseLayout(layoutSource);
-
-        System.out.println("\nLayouts:\n");
-        for(Layout l : layoutList){
-            System.out.println(l.toString());
-        }
-
-        List<String> routeList = determineRoute(addressList, layoutList);
-
-        System.out.println("\nRoute:\n");
-        for(String s: routeList){
-            System.out.println(s);
-        }
-
-        writeResult(routeList, outputFile);
-
-
+    public static void main(String[] args) {
         JFrame frame = new JFrame("Route Generator");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(800,300);
+        frame.setSize(1000,600);
 
-        JButton btn3 = new JButton("Show Address file");
-        JButton btn2 = new JButton("Show Layout file");
-        JButton btn1 = new JButton("Choose file");
+        JButton btn1 = new JButton("Choose Address file");
+        JButton btn2 = new JButton("Choose Layout file");
+        JButton btn3 = new JButton("Generate route");
 
-        btn3.setPreferredSize(new Dimension(200, 200));
-        btn2.setPreferredSize(new Dimension(200, 200));
-        btn1.setPreferredSize(new Dimension(200, 200));
+        JTextArea text1 = new JTextArea();
+        JTextArea text2 = new JTextArea();
+        JTextArea text3 = new JTextArea();
+
+        JScrollPane scroll1 = new JScrollPane(text1);
+        scroll1.setPreferredSize(new Dimension(300,500));
+
+        JScrollPane scroll2 = new JScrollPane(text2);
+        scroll2.setPreferredSize(new Dimension(300,500));
+
+        JScrollPane scroll3 = new JScrollPane(text3);
+        scroll3.setPreferredSize(new Dimension(300,500));
+
+        text1.setEditable(false);
+        text2.setEditable(false);
+        text3.setEditable(false);
+
+        btn1.setPreferredSize(new Dimension(300, 50));
+        btn2.setPreferredSize(new Dimension(300, 50));
+        btn3.setPreferredSize(new Dimension(300, 50));
 
         frame.getContentPane().setLayout(new FlowLayout());
-        frame.getContentPane().add(btn3);
-        frame.getContentPane().add(btn2);
         frame.getContentPane().add(btn1);
+        frame.getContentPane().add(btn2);
+        frame.getContentPane().add(btn3);
+        frame.getContentPane().add(scroll1);
+        frame.getContentPane().add(scroll2);
+        frame.getContentPane().add(scroll3);
 
-        btn3.addActionListener( new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-
-                String fileName = "Address.dat";
-
-                String line = null;
-
-                try
-                {
-                    FileReader fileReader = new FileReader(fileName);
-                    BufferedReader b = new BufferedReader(fileReader);
-                    while((line = b.readLine()) != null)
-                    {
-                        System.out.println(line);
-                    }
-                    b.close();
+        btn1.addActionListener(e -> {
+            addressSource = getFileName();
+            if(addressSource != null) {
+                try {
+                    addressList = parseAddress(addressSource);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
-                catch(FileNotFoundException ex)
-                {
-                    System.out.println("Unable to open file '" + fileName + "'");
+
+                for (Address a : addressList) {
+                    text1.append(a.toString() + "\n");
                 }
-                catch(IOException ex)
-                {
-                    System.out.println("Error reading file '" + fileName + "'");
-                }
+                text1.setCaretPosition(0);
             }
         });
 
-        btn2.addActionListener( new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
-                String fileName = "Layout.dat";
-                String line = null;
+        btn2.addActionListener(e -> {
+            layoutSource = getFileName();
+            if (layoutSource != null) {
+                try {
+                    layoutList = parseLayout(layoutSource);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
 
-                try
-                {
-                    FileReader fileReader = new FileReader(fileName);
-                    BufferedReader b = new BufferedReader(fileReader);
-                    while((line = b.readLine()) != null)
-                    {
-                        System.out.println(line);
-                    }
-                    b.close();
+                for (Layout b : layoutList) {
+                    text2.append(b.toString() + "\n");
                 }
-                catch(FileNotFoundException ex)
-                {
-                    System.out.println("Unable to open file '" + fileName + "'");
-                }
-                catch(IOException ex)
-                {
-                    System.out.println("Error reading file '" + fileName + "'");
-                }
+                text2.setCaretPosition(0);
             }
         });
 
-        btn1.addActionListener( new ActionListener()
-        {
-            @Override
-            public void actionPerformed(ActionEvent e)
-            {
+        btn3.addActionListener(e -> {
+            if(addressList != null && layoutList != null) {
+                routeList = determineRoute(addressList, layoutList);
 
-                JFileChooser chooser = new JFileChooser();
-                FileNameExtensionFilter filter = new FileNameExtensionFilter("text", "dat", "txt");
-                chooser.setFileFilter(filter);
-                int returnVal = chooser.showOpenDialog(null);
-                if(returnVal == JFileChooser.APPROVE_OPTION) {
-                    System.out.println("You chose to open this file: " + chooser.getSelectedFile().getName());
-                    chooser.getSelectedFile();
+                for (String r : routeList) {
+                    text3.append(r + "\n");
+                }
 
+                text3.setCaretPosition(0);
+
+                try {
+                    writeResult(routeList, outputFile);
+                } catch (IOException e1) {
+                    e1.printStackTrace();
                 }
             }
-        });
+            else {
+                System.out.println("Error! Address list or layout list not initialized");
+            }
+        }
+        );
 
         frame.setVisible(true);
 
+    }
+
+    private static String getFileName() {
+        JFileChooser chooser = new JFileChooser();
+        File workingDirectory = new File(System.getProperty("user.dir"));
+        chooser.setCurrentDirectory(workingDirectory);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("text", "dat", "txt");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+
+        if(returnVal == JFileChooser.APPROVE_OPTION){
+            return chooser.getSelectedFile().getName();
+        }
+
+        return null;
     }
 
     //addresses can be parsed in a straightforward way
